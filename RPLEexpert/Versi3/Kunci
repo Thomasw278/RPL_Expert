@@ -1,0 +1,172 @@
+package pembayaran;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Kasir {
+    private List<String> pembayaranlist = new ArrayList<>();
+    private Pembayaran pembayaran;
+    public void lakukanPembayaran(Pembayaran pembayaran) {
+        pembayaran.prosesPembayaran();
+        pembayaranlist.add("Metode Pembayaran: " + pembayaran.getMethod() + " " + "Jumlah Pembayaran: Rp " + (int)pembayaran.getJumlah());
+        cetakStruk(pembayaran);
+        tampilkanRiwayat();
+    }
+
+    public void cetakStruk(Pembayaran pembayaran) {
+        System.out.println("=== STRUK PEMBAYARAN ===");
+        System.out.println("Metode\t: "+pembayaran.getMethod());
+        System.out.println("Jumlah\t: "+pembayaran.getJumlah());
+        System.out.println("Info\t: "+pembayaran.getNama());
+        System.out.println("Status\t: BERHASIL");
+        System.out.println("========================");
+    }
+
+    public void tampilkanRiwayat() {
+        for(int i = 0; i<pembayaranlist.size(); i++){
+            System.out.println(pembayaranlist.get(i));
+        }
+    }
+}
+
+package pembayaran;
+
+public abstract class Pembayaran {
+    private double jumlah;
+
+    public double getJumlah() {
+        return jumlah;
+    }
+
+    public void setJumlah(double jumlah) {
+        if(jumlah < 10000){
+            throw new IllegalArgumentException("Jumlah minimal 10000");
+        } else {
+            this.jumlah = jumlah;
+        }
+    }
+
+    public Pembayaran(double jumlah) {
+        this.setJumlah(jumlah);
+    }
+
+    public abstract void prosesPembayaran();
+    public abstract String getMethod();
+    public abstract String getNama();
+}
+
+
+package pembayaran;
+
+public class PembayaranDebit extends Pembayaran {
+    private String debit;
+
+    public PembayaranDebit(double jumlah, String debit) {
+        super(jumlah);
+        this.setDebit(debit);
+    }
+    public String getDebit() {
+        return debit;
+    }
+    public void setDebit(String debit) {
+        if(debit.length() < 8){
+            throw new IllegalArgumentException("Debit tidak valid");
+        }else{
+            this.debit = debit;
+        }
+    }
+
+    @Override
+    public void prosesPembayaran() {
+        System.out.println("Transaksi Debit Sejumlah: " + this.getJumlah());
+    }
+
+    @Override
+    public String getMethod() {
+        return "Kartu Debit";
+    }
+
+    @Override
+    public String getNama() {
+        return this.getDebit();
+    }
+
+}
+
+
+
+package pembayaran;
+
+public class PembayaranEWallet extends Pembayaran {
+    private String id;
+    public PembayaranEWallet(double jumlah, String id) {
+        super(jumlah);
+        this.setId(id);
+    }
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        if(id.length() < 8){
+            throw new IllegalArgumentException("ID tidak valid");
+        }else {
+            this.id = id;
+        }
+    }
+
+    @Override
+    public void prosesPembayaran() {
+        System.out.println("Melakukan Pembayaran EWallet Sejumlah " + this.getJumlah());
+    }
+
+    @Override
+    public String getMethod() {
+        return "Kartu EWallet";
+    }
+
+    @Override
+    public String getNama() {
+        return this.getId();
+    }
+}
+
+
+
+package pembayaran;
+
+public class PembayaranKredit extends Pembayaran{
+    private String kredit;
+
+    public PembayaranKredit(double jumlah, String kredit) {
+        super(jumlah);
+        this.setKredit(kredit);
+    }
+
+    public String getKredit() {
+        return kredit;
+    }
+
+    public void setKredit(String kredit) {
+        if(kredit.length() < 8){
+            throw new IllegalArgumentException("Panjang tidak valid");
+        }else {
+            this.kredit = kredit;
+        }
+    }
+
+
+    @Override
+    public void prosesPembayaran() {
+        System.out.println("Memporses Pembayaran Kredit: " + this.getJumlah());
+    }
+
+    @Override
+    public String getMethod() {
+        return "Kartu Kredit";
+    }
+
+    @Override
+    public String getNama() {
+        return this.getKredit();
+    }
+}

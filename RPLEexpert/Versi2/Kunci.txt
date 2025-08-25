@@ -1,0 +1,93 @@
+package org.ukdw;
+
+public interface Pulsa {
+    void topUp(double nominal);
+    void pakai(double jumlah, String jenis);
+    public default boolean isValidTopUp(double nominal){
+        if(nominal == 50000){
+            return true;
+        } else if (nominal == 100000) {
+            return true;
+        }else if (nominal == 150000) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+}
+
+
+package org.ukdw;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class PulsaTelkomsel implements Pulsa{
+    private double SisaPulsa;
+    private int MasaAktif;
+    private List<String> logTransaksi = new ArrayList<>();
+
+    @Override
+    public void topUp(double nominal) {
+        if(isValidTopUp(nominal)){
+            if(nominal >= 100000) {
+                double bonus = (5.0 / 100) * nominal;
+                SisaPulsa = nominal + ((5.0 / 100) * nominal);
+                logTransaksi.add("TopUp " + nominal + " (+bonus " + bonus + ")");
+            } else {
+                SisaPulsa = nominal;
+            }
+            if(SisaPulsa >= 150000){
+                MasaAktif = 90;
+            } else if (SisaPulsa >= 100000) {
+                MasaAktif = 60;
+            } else {
+                MasaAktif = 30;
+            }
+        }
+    }
+    public double getSisaPulsa(){
+        return SisaPulsa;
+    }
+
+    public int getMasaAktif(){
+        return MasaAktif;
+    }
+
+    @Override
+    public void pakai(double jumlah, String jenis) {
+        double hasil = getSisaPulsa();
+        if(jenis == "pulsa"){
+            double hitung = jumlah / 15;
+            double pakai = 5000 * hitung;
+            hasil -= 5000 * hitung;
+            SisaPulsa = hasil;
+            logTransaksi.add("Pakai " + jumlah + " "  + jenis + " (-" + pakai + ")");
+        } else if(jenis == "kuota"){
+            double hitung = jumlah * 5000;
+            hasil -= hitung;
+            SisaPulsa = hasil;
+            logTransaksi.add("Pakai " + jumlah + " "  + jenis + " (-" + hitung + ")");
+        }
+    }
+
+    @Override
+    public boolean isValidTopUp(double nominal) {
+        if (nominal == 50000) {
+            return true;
+        } else if (nominal == 100000) {
+            return true;
+        } else if (nominal == 150000) {
+            return true;
+        }
+        return false;
+    }
+
+    public List<String> getLogTransaksi() {
+        return logTransaksi;
+    }
+
+    public void printLog(){
+        System.out.println(logTransaksi);
+    }
+}
